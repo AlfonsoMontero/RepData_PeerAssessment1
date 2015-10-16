@@ -6,7 +6,8 @@ output:
   html_document:
     keep_md: true
 ---
-##Loading necesary libraries
+
+## Loading necesary libraries
 
 ```r
 library(lubridate)
@@ -24,22 +25,23 @@ Convert **date** to a more useful format
 activity$date<-ymd(activity$date)
 ```
 ## What is mean total number of steps taken per day?
-1. Firt sum steps taken per day
+1 Sum of steps taken per day
 
 ```r
 totalStepsByDay <- select(activity, steps, date) %>%
         group_by(date) %>%
         summarise(totalSteps = sum(steps))
 ```
-2. Histogram 
+2 Histogram 
 
 ```r
-plot(totalStepsByDay$date,totalStepsByDay$totalSteps,type="h",xlab="Date", ylab="Number of steps", main="Number of steps taken each day")
+plot(totalStepsByDay$date,totalStepsByDay$totalSteps,type="h",
+     xlab="Date", ylab="Number of steps", main="Number of steps taken each day")
 ```
 
 ![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
 
-3. Calculate mean and median of steps per day
+3 Calculate mean and median of steps per day
 
 ```r
 meanSteps<-mean(totalStepsByDay$totalSteps,na.rm=TRUE)
@@ -52,7 +54,7 @@ cat('Mean:',meanSteps,' Median:',medianSteps)
 ```
 
 ## What is the average daily activity pattern?
-1. Summarize the number of steps taken grouped by intervals
+1 Summarize the number of steps taken, grouped by intervals
 
 ```r
 totalSteps<-sum(activity$steps,na.rm=TRUE)
@@ -60,15 +62,16 @@ totalSteps5min<-select(activity, steps,interval) %>%
         group_by(interval) %>%
         summarise(steps=mean(steps,na.rm=TRUE))
 ```
-2. Plot 
+2 Plot 
 
 ```r
-plot(totalSteps5min$interval,totalSteps5min$steps,type='l',xlab="Interval", ylab="Average steps",main="Average number of steps per Interval")
+plot(totalSteps5min$interval,totalSteps5min$steps,type='l',
+     xlab="Interval", ylab="Average steps",main="Average number of steps per Interval")
 ```
 
 ![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png) 
 
-3. The interval with the higher number of steps was:
+3 The interval with the higher number of steps was:
 
 ```r
 activity[max(activity$steps,na.rm=TRUE),"interval"]
@@ -78,7 +81,7 @@ activity[max(activity$steps,na.rm=TRUE),"interval"]
 ## [1] 1905
 ```
 ## Imputing missing values
-1. Total number of rows with missing values in the dataset
+1 Total number of rows with missing values in the dataset
 
 ```r
 nrow(activity)-sum(complete.cases(activity))
@@ -87,7 +90,7 @@ nrow(activity)-sum(complete.cases(activity))
 ```
 ## [1] 2304
 ```
-2. Filling NA's with the median of the 5-min inteval. 
+2 Filling NA's with the median of the 5-min interval. 
 
 Calculate the mean for 5-minute intervals.
 
@@ -96,7 +99,7 @@ meanSteps5min<-select(activity, steps,interval) %>%
         group_by(interval) %>%
         summarise(meanSteps=mean(steps,na.rm=TRUE))
 ```
-3. Create a dataset with NA's filled
+3 Create a dataset with NA's filled
 
 ```r
 activityFilled<-activity
@@ -106,24 +109,23 @@ for (f in NAindex){
         activityFilled$steps[f]=meanSteps5min$meanSteps[which(meanSteps5min$interval == actualInterval)]
 }
 ```
-4. What is mean total number of steps taken per day with NA's filled?  
-
-Sum steps taken per day
+Sum of steps taken per day
 
 ```r
 totalStepsByDayFilled <- select(activityFilled, steps, date) %>%
         group_by(date) %>%
         summarise(totalSteps = sum(steps))
 ```
-Histogram with NA's filled
+4 Histogram with NA's filled
 
 ```r
-plot(totalStepsByDayFilled$date,totalStepsByDayFilled$totalSteps,type="h",xlab="Date", ylab="Number of steps", main="Number of steps taken each day without NA's")
+plot(totalStepsByDayFilled$date,totalStepsByDayFilled$totalSteps,type="h",
+     xlab="Date", ylab="Number of steps", main="Number of steps taken each day without NA's")
 ```
 
 ![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14-1.png) 
 
-Calculate mean and median of steps per day
+Calculate mean and median of steps per day  
 
 ```r
 meanStepsFilled<-mean(totalStepsByDayFilled$totalSteps,na.rm=TRUE)
@@ -137,7 +139,7 @@ cat('Mean:',meanStepsFilled,' Median:',medianStepsFilled)
 
 
 ## Are there differences in activity patterns between weekdays and weekends?  
-1. Create a factor column indicating if date is a weekend or not.  
+1 Create a **factor** column indicating if date is a weekend or not.  
 
 ```r
 weekDay<-function(date){
@@ -148,7 +150,7 @@ weekDay<-function(date){
 }
 activityFilled$weekday<-as.factor(mapply(weekDay,activityFilled$date))
 ```
-2. Make a plot
+2 Make a plot
 
 ```r
 meanSteps5minWeekend<-select(activityFilled, steps,interval,weekday) %>%
@@ -160,8 +162,10 @@ meanSteps5minWeekday<-select(activityFilled, steps,interval,weekday) %>%
         group_by(interval) %>%
         summarise(meanSteps=mean(steps,na.rm=TRUE))
 par(mfrow=c(2,1),mar=c(4,4,2,2),oma=c(2,0,2,0))
-plot(meanSteps5minWeekday$interval,meanSteps5minWeekday$meanSteps,type="l",col="blue", main="Weekday",xlab="",ylab="Number of steps")
-plot(meanSteps5minWeekend$interval,meanSteps5minWeekend$meanSteps,type="l",col="red",main="Weekend",xlab="Interval",ylab="Number of steps")
+plot(meanSteps5minWeekday$interval,meanSteps5minWeekday$meanSteps,type="l",col="blue",
+     main="Weekday",xlab="",ylab="Number of steps")
+plot(meanSteps5minWeekend$interval,meanSteps5minWeekend$meanSteps,type="l",col="red",
+     main="Weekend",xlab="Interval",ylab="Number of steps")
 ```
 
 ![plot of chunk unnamed-chunk-17](figure/unnamed-chunk-17-1.png) 
